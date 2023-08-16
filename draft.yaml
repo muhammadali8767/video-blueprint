@@ -1,0 +1,104 @@
+models:
+
+  User:
+    id: id
+    name: string
+    email: string unique
+    email_verified_at: timestamp nullable
+    password: string
+    remember_token: string nullable
+    image: string
+    about: text
+
+  Course:
+    id: id
+    name: string
+    image: string
+    price: integer
+    period: integer nullable
+    published_at: timestamp nullable
+
+  Payment:
+    id: id
+    type: enum:cash,card,online
+    status: enum:not-payed,rejected,payed
+    amount: bigInteger
+    user_id: bigInteger foreign:users.id
+    course_id: bigInteger foreign:courses.id nullable
+
+  Order:
+    id: id
+    student_id: bigInteger foreign:students.id
+    course_id: bigInteger foreign:courses.id
+    amount: bigInteger
+    payyed: integer
+    period: integer
+    payment_id: bigInteger foreign:payments.id
+
+  Video:
+    id: id
+    course_id: bigInteger foreign:courses.id
+    author_id: bigInteger foreign:users.id
+    video: string
+    processed: string
+    ordinal_number: integer
+
+  Task:
+    id: id
+    video_id: bigInteger foreign:videos.id
+    name: string
+
+  Direction:
+    id: id
+    name: string
+    description: text
+
+  StudentVideo:
+    id: id
+    student_id: bigInteger foreign:users.id
+    video_id: bigInteger foreign:videos.id
+    seen: integer
+    task_completed: integer
+
+  TeacherDirection:
+    id: id
+    teacher_id: integer index foreign:users.id
+    direction_id: integer index foreign:directions.id
+
+  CourseDirection:
+    id: id
+    course_id: integer index foreign:courses.id
+    direction_id: integer index foreign:directions.id
+
+  CourseTeacher:
+    id: id
+    course_id: integer index foreign:courses.id
+    teacher_id: integer index foreign:users.id
+
+  CourseStudent:
+    id: id
+    course_id: integer index foreign:courses.id
+    studernt_id: integer index foreign:users.id
+
+controllers:
+
+  Api\v1\Admin\User:
+    resource: api
+  Api\v1\Admin\Course:
+    resource: api
+  Api\v1\Admin\Task:
+    resource: api
+  Api\v1\Admin\Direction:
+    resource: api
+
+  Api\v1\Admin\Video:
+    resource: api
+
+    store:
+      validate: course_id, author_id, video, ordinal_number
+      save: video
+      send: ReviewNotification to:post.author with:video
+      dispatch: ProcessMedia with:video
+      fire: NewPost with:post
+      flash: post.title
+      redirect: post.index
