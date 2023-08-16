@@ -9,6 +9,9 @@ models:
     remember_token: string nullable
     image: string
     about: text
+    relationships:
+      hasMany: Video, User:teacher_id
+
 
   Course:
     id: id
@@ -25,6 +28,8 @@ models:
     amount: bigInteger
     user_id: bigInteger foreign:users.id
     course_id: bigInteger foreign:courses.id nullable
+    relationships:
+      belongsTo: Course
 
   Order:
     id: id
@@ -34,6 +39,8 @@ models:
     payyed: integer
     period: integer
     payment_id: bigInteger foreign:payments.id
+    relationships:
+      belongsTo: Course, User
 
   Video:
     id: id
@@ -42,11 +49,15 @@ models:
     video: string
     processed: string
     ordinal_number: integer
+    relationships:
+      belongsTo: Course, User:author_id
 
   Task:
     id: id
     video_id: bigInteger foreign:videos.id
     name: string
+    relationships:
+      belongsTo: Video
 
   Direction:
     id: id
@@ -58,27 +69,37 @@ models:
     student_id: bigInteger foreign:users.id
     video_id: bigInteger foreign:videos.id
     seen: integer
-    task_completed: integer
+    task_completed: boolean
+    relationships:
+      belongsTo: Video, User:student_id
 
   TeacherDirection:
     id: id
     teacher_id: integer index foreign:users.id
     direction_id: integer index foreign:directions.id
+    relationships:
+      belongsTo: Direction, User:teacher_id
 
   CourseDirection:
     id: id
     course_id: integer index foreign:courses.id
     direction_id: integer index foreign:directions.id
+    relationships:
+      belongsTo: Direction, Course
 
   CourseTeacher:
     id: id
     course_id: integer index foreign:courses.id
     teacher_id: integer index foreign:users.id
+    relationships:
+      belongsTo: Course, User:teacher_id
 
   CourseStudent:
     id: id
     course_id: integer index foreign:courses.id
     studernt_id: integer index foreign:users.id
+    relationships:
+      belongsTo: Course, User:teacher_id
 
 controllers:
 
