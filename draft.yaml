@@ -9,8 +9,8 @@ models:
     remember_token: string nullable
     image: string
     about: text
-    relationships:
-      hasMany: Video, User:teacher_id
+  #    relationships:
+  #      hasMany: Video, User:teacher_id
 
 
   Course:
@@ -28,8 +28,8 @@ models:
     amount: bigInteger
     user_id: bigInteger foreign:users.id
     course_id: bigInteger foreign:courses.id nullable
-    relationships:
-      belongsTo: Course
+  #    relationships:
+  #      belongsTo: Course
 
   Order:
     id: id
@@ -49,15 +49,15 @@ models:
     video: string
     processed: string
     ordinal_number: integer
-    relationships:
-      belongsTo: Course, User:author_id
+  #    relationships:
+  #      belongsTo: Course, User:author_id
 
   Task:
     id: id
     video_id: bigInteger foreign:videos.id
     name: string
-    relationships:
-      belongsTo: Video
+  #    relationships:
+  #      belongsTo: Video
 
   Direction:
     id: id
@@ -70,56 +70,68 @@ models:
     video_id: bigInteger foreign:videos.id
     seen: integer
     task_completed: boolean
-    relationships:
-      belongsTo: Video, User:student_id
+  #    relationships:
+  #      belongsTo: Video, User:student_id
 
   TeacherDirection:
     id: id
     teacher_id: integer index foreign:users.id
     direction_id: integer index foreign:directions.id
-    relationships:
-      belongsTo: Direction, User:teacher_id
+  #    relationships:
+  #      belongsTo: Direction, User:teacher_id
 
   CourseDirection:
     id: id
     course_id: integer index foreign:courses.id
     direction_id: integer index foreign:directions.id
-    relationships:
-      belongsTo: Direction, Course
+  #    relationships:
+  #      belongsTo: Direction, Course
 
   CourseTeacher:
     id: id
     course_id: integer index foreign:courses.id
     teacher_id: integer index foreign:users.id
-    relationships:
-      belongsTo: Course, User:teacher_id
+  #    relationships:
+  #      belongsTo: Course, User:teacher_id
 
   CourseStudent:
     id: id
     course_id: integer index foreign:courses.id
     studernt_id: integer index foreign:users.id
-    relationships:
-      belongsTo: Course, User:teacher_id
+#    relationships:
+#      belongsTo: Course, User:teacher_id
 
 controllers:
 
   Api\v1\Admin\User:
-    resource: api
-  Api\v1\Admin\Course:
-    resource: api
-  Api\v1\Admin\Task:
-    resource: api
-  Api\v1\Admin\Direction:
-    resource: api
-
-  Api\v1\Admin\Video:
-    resource: api
-
-    store:
-      validate: course_id, author_id, video, ordinal_number
-      save: video
-      send: ReviewNotification to:post.author with:video
-      dispatch: ProcessMedia with:video
-      fire: NewPost with:post
-      flash: post.title
-      redirect: post.index
+  index:
+    resource: paginate:users
+  store:
+    validate: name, email
+    save: user
+    resource: user
+  update:
+    validate: user
+    update: user
+    flash: user.id
+    respond: user
+  show:
+    find: user.id
+    respond: user
+#  Api\v1\Admin\Course:
+#    resource: api
+#  Api\v1\Admin\Task:
+#    resource: api
+#  Api\v1\Admin\Direction:
+#    resource: api
+#  Api\v1\Admin\Video:
+#    resource: api
+#
+#    store:
+#      validate: course_id, author_id, video, ordinal_number
+#      save: video
+#      send: ReviewNotification to:video.author with:video
+#      dispatch: ProcessMedia with:video
+#      fire: NewVideo with:video
+#      flash: video.name
+#      redirect: video.index
