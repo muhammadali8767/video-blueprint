@@ -104,20 +104,19 @@ models:
 controllers:
 
   Api\v1\Admin\User:
-  index:
-    resource: paginate:users
-  store:
-    validate: name, email
-    save: user
-    resource: user
-  update:
-    validate: user
-    update: user
-    flash: user.id
-    respond: user
-  show:
-    find: user.id
-    respond: user
+    index:
+      resource: paginate:users
+    store:
+      validate: name, email:unique, password:confirmed, image, about
+      save: user
+      resource: user
+    update:
+      validate: name, email:unique, password:confirmed, image, about
+      update: user
+      flash: user.id
+      respond: user
+    show:
+      respond: user
 #  Api\v1\Admin\Course:
 #    resource: api
 #  Api\v1\Admin\Task:
